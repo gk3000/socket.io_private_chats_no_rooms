@@ -3,6 +3,7 @@
   display: grid;
   grid-template-columns: 1fr 3fr;
 /*   gap: 1em; */
+font-family: monospace;
 }
 .App aside {
   background: #f7c3ec;
@@ -33,4 +34,8 @@
   padding: 0.5em;
   border-radius: 5px;
   margin-bottom: 0.5em;
+}
+.smallText {
+  font-size: 0.8em;
+  color: #666;
 }

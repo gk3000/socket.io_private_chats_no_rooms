@@ -3,7 +3,7 @@ import React,{useState} from 'react'
 
 export default function ChatMessage({socket,selectedUser}){
 	const [message, setMessage] = useState('')
-console.log(selectedUser)
+	console.log(selectedUser)
 	const sendMessage = (e) => {
 		e.preventDefault()
 		socket.emit('chat message', {message, to:selectedUser,from:socket.id})
@@ -11,7 +11,7 @@ console.log(selectedUser)
 	}
 
 	return (
-		<div style={{position:'relative'}}>
+		<div style={{position:'relative',height:'75%'}}>
 		<form onSubmit={sendMessage} style={styles.chatMessage}>
 		<textarea placeholder={'Your message...'} onChange={(e)=>{setMessage(e.target.value)}} value={message} style={styles.messageInput}></textarea>
 		<button style={styles.sendButton}>Send</button>

@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 
 export default function EnterUsername({userName,setUserNameInput,userNameInput,socket,setUserName
 }) {
@@ -7,13 +7,32 @@ export default function EnterUsername({userName,setUserNameInput,userNameInput,s
 		e.preventDefault()
     // setting user name to state
 		setUserName(userNameInput)
-    // setting user name to socket auth
-		socket.auth = {userName: userNameInput}
-    // connecting to the server
-		socket.connect()
+		// connecting to the socket in the server
+		connect(userNameInput)
     // clearing the input
 		setUserNameInput('')
+		// saving userName in the session storage
+		sessionStorage.setItem('userName', userNameInput)
 	}
+
+	// establishing a connection
+	const connect = (user) => {
+    // setting user name to socket auth
+		socket.auth = {userName: user}
+    // connecting to the server
+		socket.connect()
+	}
+
+	// checking if the user name is saved in the session storage
+	useEffect(()=>{
+		const userName = sessionStorage.getItem('userName')
+		if(userName){
+			setUserName(userName)
+			connect(userName)
+		}
+	},[])
+
+
 	return (
 		<section>
 		{!userName ? <form onSubmit={submitUserName}>
@@ -21,7 +40,7 @@ export default function EnterUsername({userName,setUserNameInput,userNameInput,s
 		<input onChange={(e)=>{setUserNameInput(e.target.value)}} value={userNameInput}></input>
 		<button>Ok</button>
 		</form>:
-		<p>Your name is: {userName}</p>}
+		<h2>Logged in as: {userName}</h2>}
 		</section>
 		)
 }

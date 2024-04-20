@@ -5,6 +5,7 @@ import './App.css'
 import EnterUsername from './components/EnterUsername'
 import UserList from './components/UserList'
 import ChatMessage from './components/ChatMessage'
+import ChatList from './components/ChatList'
 
 function App() {
   // handling user entering the name onChange
@@ -15,8 +16,7 @@ function App() {
   const [users, setUsers]=useState([])
   // keeping track of the selected user to chat with
   const [selectedUser, setSelectedUser] = useState(null)
-
-
+console.log(users)
 
 // handling connection error
   socket.on('connect_error', (err) => {
@@ -39,16 +39,23 @@ function App() {
       return 0;
     });
 // setting the users to state
-    setUsers(users)
+    setUsers([...users])
+    console.log('users finished')
   })
 
 // handling new user connecting so the existing users will see the newcomer
   socket.on('user connected', (user) => {
     // adding the new user to the list of users
     setUsers((currentUsers) => {
-      if (currentUsers.findIndex(u => u.userId === user.userId) === -1) {
+      const userIdx = currentUsers.findIndex(u => u.userId === user.userId)
+      if (userIdx === -1) {
         return [...currentUsers, user]
+      }else{
+        currentUsers[userIdx].userId = user.userId 
+        currentUsers[userIdx].connected = user.connected
       }
+      console.log('user connected finished')
+
       return currentUsers
     });
   });
@@ -73,7 +80,10 @@ function App() {
     socket={socket}
     setUserName={setUserName}/>
 
-    {userName && <ChatMessage socket={socket} selectedUser={selectedUser} />}
+    <ChatList socket={socket} selectedUser={selectedUser}/>
+
+    {(userName && selectedUser) && <ChatMessage socket={socket} selectedUser={selectedUser} />}
+
     </main>
 
     </div>

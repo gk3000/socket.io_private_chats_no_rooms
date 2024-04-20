@@ -32,25 +32,49 @@ const connectedUsers = []
 io.on('connection', (socket) => {
   const userIndex = connectedUsers.findIndex((user) => user.userName === socket.userName);
   if (userIndex === -1) {
+    console.log('connection, user exists')
     connectedUsers.push({
+      userId: socket.id,
       userName: socket.userName,
-      userId: socket.id
+      connected:true
     });
 
     // Emit to all users except the one connecting
     socket.broadcast.emit('user connected', {
       userId: socket.id,
-      userName: socket.userName
+      userName: socket.userName,
+      connected:true
     });
+
+    console.log(connectedUsers)
+  }else{
+    connectedUsers[userIndex].connected = true
+    connectedUsers[userIndex].userId = socket.id
+    console.log(connectedUsers)
+        // Emit to all users except the one connecting
+    socket.broadcast.emit('user connected', {
+      userId: socket.id,
+      userName: socket.userName,
+      connected:true
+    });
+  }
 
     // Emit to the connecting user
     socket.emit('users', connectedUsers);
-  }
+
+  socket.on('chat message', ({message, to, from}) => {
+    console.log(to,from)
+  	io.to(to).to(from).emit('chat message', {message, to, from});
+  })
+
 
   socket.on('disconnect', () => {
     const disconnectIndex = connectedUsers.findIndex((user) => user.userName === socket.userName);
     if (disconnectIndex !== -1) {
-      connectedUsers.splice(disconnectIndex, 1);
+      // with next line we completely remove user form chats
+      // connectedUsers.splice(disconnectIndex, 1);
+      // or we can keep them but change the status to disconnected
+      connectedUsers[disconnectIndex].connected = false
       socket.broadcast.emit('users', connectedUsers);
     }
   });
