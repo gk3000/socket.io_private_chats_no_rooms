@@ -1,34 +1,40 @@
 import React,{useEffect} from 'react'
+import {v4 as uuid} from 'uuid'
 
-export default function EnterUsername({userName,setUserNameInput,userNameInput,socket,setUserName
+export default function EnterUsername({userName,customID,setCustomID, setUserNameInput,userNameInput,socket,setUserName
 }) {
+	console.log('customID in enterMessage: ', customID)
 	// handling user submitting the name
 	const submitUserName = (e) => {
 		e.preventDefault()
     // setting user name to state
 		setUserName(userNameInput)
+		// saving userName in the session storage
+		const customID = userNameInput + uuid()
+		localStorage.setItem('userName', userNameInput)
+		localStorage.setItem('customID', customID)
+		setCustomID(customID)
 		// connecting to the socket in the server
-		connect(userNameInput)
+		connect(userNameInput,customID)
     // clearing the input
 		setUserNameInput('')
-		// saving userName in the session storage
-		sessionStorage.setItem('userName', userNameInput)
 	}
 
 	// establishing a connection
-	const connect = (user) => {
+	const connect = (user,customID) => {
     // setting user name to socket auth
-		socket.auth = {userName: user}
+		console.log('customid in connect ', customID)
+		socket.auth = {userName: user,customID}
     // connecting to the server
 		socket.connect()
 	}
 
 	// checking if the user name is saved in the session storage
 	useEffect(()=>{
-		const userName = sessionStorage.getItem('userName')
+		const userName = localStorage.getItem('userName')
 		if(userName){
 			setUserName(userName)
-			connect(userName)
+			connect(userName,customID)
 		}
 	},[])
 

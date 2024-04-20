@@ -15,14 +15,17 @@ const io = new Server(
 		origin:"*"
 	}})
 
+
 // Middleware to handle the username
-io.use((socket, next)=>{
-	const userName = socket.handshake.auth.userName
-	if(!userName){
-		return next(new Error('missing username'))
-	}
-	socket.userName = userName
-	next()
+io.use((socket, next)=>{ 
+  const userName = socket.handshake.auth.userName
+  const customID = socket.handshake.auth.customID
+  if(!userName){
+    return next(new Error('missing username'))
+  }
+  socket.userName = userName
+  socket.id=customID
+  next()
 })
 
 // Array to store all connected users
@@ -36,35 +39,35 @@ io.on('connection', (socket) => {
     connectedUsers.push({
       userId: socket.id,
       userName: socket.userName,
-      connected:true
+      connected:true,
     });
 
     // Emit to all users except the one connecting
     socket.broadcast.emit('user connected', {
       userId: socket.id,
       userName: socket.userName,
-      connected:true
+      connected:true,
     });
 
     console.log(connectedUsers)
   }else{
     connectedUsers[userIndex].connected = true
     connectedUsers[userIndex].userId = socket.id
-    console.log(connectedUsers)
-        // Emit to all users except the one connecting
+    console.log("reconnect: ", connectedUsers)
+    // Emit to all users except the one connecting
     socket.broadcast.emit('user connected', {
       userId: socket.id,
       userName: socket.userName,
-      connected:true
+      connected:true,
     });
   }
 
     // Emit to the connecting user
-    socket.emit('users', connectedUsers);
+  socket.emit('users', connectedUsers);
 
   socket.on('chat message', ({message, to, from}) => {
     console.log(to,from)
-  	io.to(to).to(from).emit('chat message', {message, to, from});
+    io.to(to).to(from).emit('chat message', {message, to, from});
   })
 
 

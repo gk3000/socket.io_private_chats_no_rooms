@@ -14,9 +14,11 @@ function App() {
   const [userName, setUserName] = useState('')
   // list of all connected users
   const [users, setUsers]=useState([])
+    console.log('all users in app: ', users)
   // keeping track of the selected user to chat with
   const [selectedUser, setSelectedUser] = useState(null)
-console.log(users)
+
+  const [customID, setCustomID]=useState(localStorage.getItem('customID'))
 
 // handling connection error
   socket.on('connect_error', (err) => {
@@ -40,7 +42,6 @@ console.log(users)
     });
 // setting the users to state
     setUsers([...users])
-    console.log('users finished')
   })
 
 // handling new user connecting so the existing users will see the newcomer
@@ -54,9 +55,7 @@ console.log(users)
         currentUsers[userIdx].userId = user.userId 
         currentUsers[userIdx].connected = user.connected
       }
-      console.log('user connected finished')
-
-      return currentUsers
+      return [...currentUsers]
     });
   });
 
@@ -78,7 +77,9 @@ console.log(users)
     userNameInput={userNameInput} 
     setUserNameInput={setUserNameInput} 
     socket={socket}
-    setUserName={setUserName}/>
+    setUserName={setUserName}
+    customID={customID}
+    setCustomID={setCustomID}/>
 
     <ChatList socket={socket} selectedUser={selectedUser}/>
 
