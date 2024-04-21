@@ -1,4 +1,4 @@
-// Compenent to enter the user name and establish a socket connection
+// Component to enter the user name and establish a socket connection
 import React, { useEffect } from 'react'
 import { v4 as uuid } from 'uuid'
 
