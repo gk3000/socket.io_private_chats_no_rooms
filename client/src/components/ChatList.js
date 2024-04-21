@@ -1,3 +1,4 @@
+// This component will display the chat messages between the current user and the selected user.
 import React, { useEffect, useState } from 'react';
 
 export default function ChatList({ socket, selectedUser }) {

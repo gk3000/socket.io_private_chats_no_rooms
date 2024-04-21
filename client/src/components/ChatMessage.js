@@ -3,7 +3,6 @@ import React,{useState} from 'react'
 
 export default function ChatMessage({socket,selectedUser}){
 	const [message, setMessage] = useState('')
-	console.log(selectedUser)
 	const sendMessage = (e) => {
 		e.preventDefault()
 		socket.emit('chat message', {message, to:selectedUser,from:socket.id})
